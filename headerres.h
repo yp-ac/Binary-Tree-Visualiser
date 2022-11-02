@@ -1,0 +1,12 @@
+#define ID_USERINPUT        1001
+#define ID_rbTAKECOLORIN    1002
+#define ID_COLORINPUT       1003
+#define DATAENTRY           1004
+#define ID_ABOUT        101
+#define ID_EXIT         102
+#define ID_ADD          103
+#define ID_DEL          104
+#define ID_DELETE_TREE  105
+#define ID_DARK_MODE    106
+#define ID_CHANGE_COLOR 107
+#define ID_LIGHT_MODE   108
