@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <assert.h>
+#include <graphics.h>
 #include "stack.h"
 #include "bst.h"
-#include <graphics.h>
 
 #define MAX_HEIGHT  5
 #define RADIUS     10
@@ -10,6 +10,12 @@
 
 stack_t* prev_positions = NULL;
 char buffer[64];
+
+void draw_node(int x, int y, int data) {
+    circle(x, y, RADIUS);
+    sprintf(buffer, "%d", data);
+    outtextxy(x, y, buffer);
+}
 
 void display_bst_node(bst_node_t *p_bst_st, int level, int is_left) {
     if (p_bst_st == NULL) {
@@ -20,9 +26,7 @@ void display_bst_node(bst_node_t *p_bst_st, int level, int is_left) {
     assert(stack_peek(prev_positions, &prev) == SUCCESS);
     x = ((is_left == TRUE) ? -1 : 1) * prev;
 
-    circle(x, y, RADIUS);
-    sprintf(buffer, "%d", p_bst_st -> data);
-    outtextxy(x, y, buffer);
+    draw_node(x, y, p_bst_st -> data);
 
     stack_push(prev_positions, x);
 
@@ -38,9 +42,7 @@ void display_bst(bst_t* p_bst) {
     int tmp;
 
     assert(p_bst -> p_root_node != NULL);
-    circle(x, y, RADIUS);
-    sprintf(buffer, "%d", p_bst -> p_root_node -> data);
-    outtextxy(x, y, buffer);
+    draw_node(x, y, p_bst -> p_root_node -> data);
 
     assert(stack_push(prev_positions, x) == SUCCESS);
 
@@ -52,7 +54,7 @@ void display_bst(bst_t* p_bst) {
 
 int main() {
     int gd = DETECT, gm;
-    initgraph(&gd, &gm, "C:\\Program Files (x86)\\Colorado\\cs1300\\bgi");
+    
     prev_positions = create_stack(MAX_HEIGHT + 2);
     bst_t *p_bst = NULL;
     int data;
@@ -68,6 +70,7 @@ int main() {
 
     inorder_r(p_bst);
 
+    initgraph(&gd, &gm, "C:\\Program Files (x86)\\Colorado\\cs1300\\bgi");
     display_bst(p_bst);
 
     stack_destroy(&prev_positions);

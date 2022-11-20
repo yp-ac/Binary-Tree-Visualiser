@@ -33,7 +33,7 @@ int stack_push(stack_t* p_stack, int new_data) {
 
     p_stack -> top++;
     p_stack -> data[p_stack -> top] = new_data;
-    printf("PUSH %d\n", p_stack -> top);
+
     return SUCCESS;
 }
 
@@ -45,7 +45,6 @@ int stack_pop(stack_t* p_stack, int* old_data) {
     *old_data = p_stack -> data[p_stack -> top];
     p_stack -> top--;
 
-    printf("POP  %d\n", p_stack -> top);
     return SUCCESS;
 }
 

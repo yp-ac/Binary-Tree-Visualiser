@@ -17,7 +17,7 @@
 
 struct stack {
     int *data;
-    size_t top, max; 
+    long int top, max; 
 };
 
 typedef struct stack stack_t;
