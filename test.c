@@ -33,8 +33,8 @@ void display_bst_node(bst_node_t *p_bst_st, int level, int is_left) {
 
     stack_push(prev_positions, x);
 
-    display_bst_node(p_bst_st -> left, level, TRUE);
-    display_bst_node(p_bst_st -> right, level, FALSE);
+    display_bst_node(p_bst_st -> left, level + 1, TRUE);
+    display_bst_node(p_bst_st -> right, level + 1, FALSE);
 
     stack_pop(prev_positions, &prev);
 }
