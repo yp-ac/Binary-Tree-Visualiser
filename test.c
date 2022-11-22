@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <math.h>
 #include <graphics.h>
 #include "stack.h"
 #include "bst.h"
@@ -10,8 +11,10 @@
 
 stack_t* prev_positions = NULL;
 char buffer[64];
+int offsets[MAX_HEIGHT + 1];
 
 void draw_node(int x, int y, int data) {
+    printf("%d X:%d Y:%d\n", data, x, y);
     circle(x, y, RADIUS);
     sprintf(buffer, "%d", data);
     outtextxy(x, y, buffer);
@@ -24,9 +27,9 @@ void display_bst_node(bst_node_t *p_bst_st, int level, int is_left) {
 
     int x, y = level * ROW_HEIGHT, prev;
     assert(stack_peek(prev_positions, &prev) == SUCCESS);
-    x = ((is_left == TRUE) ? -1 : 1) * prev;
+    x = prev + ((is_left == TRUE) ? -offsets[level - 1] : offsets[level - 1]);
 
-    draw_node(x, y, p_bst_st -> data);
+    draw_node(prev + x, y, p_bst_st -> data);
 
     stack_push(prev_positions, x);
 
@@ -39,7 +42,12 @@ void display_bst_node(bst_node_t *p_bst_st, int level, int is_left) {
 void display_bst(bst_t* p_bst) {
     int x = getmaxx() / 2;
     int y = 1 * ROW_HEIGHT;
-    int tmp;
+    int tmp, i;
+
+    offsets[0] = 0;
+    for (i = 1; i < MAX_HEIGHT + 1; i++) {
+        offsets[i] = getmaxx() / pow(2, i + 1) - 20;
+    }
 
     assert(p_bst -> p_root_node != NULL);
     draw_node(x, y, p_bst -> p_root_node -> data);
@@ -75,8 +83,10 @@ int main() {
 
     stack_destroy(&prev_positions);
     bst_destroy(&p_bst);
+    
     getch();
     closegraph();
+
     return 0;    
 }
 
