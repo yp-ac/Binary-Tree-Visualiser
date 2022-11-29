@@ -25,11 +25,13 @@ void display_bst_node(bst_node_t *p_bst_st, int level, int is_left) {
         return;
     }
 
-    int x, y = level * ROW_HEIGHT, prev;
+    int x, y = level * ROW_HEIGHT, prev, curr_offset;
     assert(stack_peek(prev_positions, &prev) == SUCCESS);
-    x = prev + ((is_left == TRUE) ? -offsets[level - 1] : offsets[level - 1]);
+    curr_offset = ((is_left == TRUE) ? (-1 * offsets[level - 1]) : (offsets[level - 1]));
+    x = prev + curr_offset;
 
-    draw_node(prev + x, y, p_bst_st -> data);
+    line(prev, (level - 1) * ROW_HEIGHT + RADIUS, x, y - RADIUS);
+    draw_node(x, y, p_bst_st -> data);
 
     stack_push(prev_positions, x);
 
@@ -78,7 +80,8 @@ int main() {
 
     inorder_r(p_bst);
 
-    initgraph(&gd, &gm, "C:\\Program Files (x86)\\Colorado\\cs1300\\bgi");
+    // initgraph(&gd, &gm, "C:\\Program Files (x86)\\Colorado\\cs1300\\bgi");
+    initwindow(1600, 600, "BST Viz");
     display_bst(p_bst);
 
     stack_destroy(&prev_positions);
@@ -89,10 +92,3 @@ int main() {
 
     return 0;    
 }
-
-// int main() {
-//     stack_t* p_stack = NULL;
-//     p_stack = create_stack(3);
-//     assert(stack_pop(p_stack) == STACK_UNDERFLOW);
-
-// }
