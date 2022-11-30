@@ -26,7 +26,7 @@ void display_bst_node(bst_node_t *p_bst_st, int level, int is_left) {
     }
 
     int x, y = level * ROW_HEIGHT, prev, curr_offset;
-    assert(stack_peek(prev_positions, &prev) == SUCCESS);
+    assert(StackPeek(prev_positions, &prev) == SUCCESS);
     curr_offset = ((is_left == TRUE) ? (-1 * offsets[level - 1]) : (offsets[level - 1]));
     x = prev + curr_offset;
 
@@ -65,7 +65,7 @@ void display_bst(bst_t* p_bst) {
 int main() {
     int gd = DETECT, gm;
     
-    prev_positions = create_stack(MAX_HEIGHT + 2);
+    prev_positions = CreateStack(MAX_HEIGHT + 2);
     bst_t *p_bst = NULL;
     int data;
 
@@ -84,7 +84,7 @@ int main() {
     initwindow(1600, 600, "BST Viz");
     display_bst(p_bst);
 
-    stack_destroy(&prev_positions);
+    StackDestroy(&prev_positions);
     bst_destroy(&p_bst);
     
     getch();
