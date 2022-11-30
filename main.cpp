@@ -165,6 +165,7 @@ bst_node_t *p_curr_find_node = NULL;
 char BUFFER[64];
 int OFFSETS[MAX_HEIGHT + 1];
 int STATUS;
+int isRootNodeFlag = 0;
 
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
@@ -254,6 +255,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             case SEARCHING_TIMER:
                 KillTimer(hwnd, SEARCHING_TIMER);
+                if(isRootNodeFlag == 1)
+                {
+                    p_curr_find_node -> color = DATA_HIGHLIGHT_COLOR;
+                    SetTimer(hwnd, SEARCHING_TIMER, 1000, NULL);
+                    InvalidateRect(hwnd, NULL, TRUE);
+                    isRootNodeFlag = 0;
+                    break;
+                }
                 if(p_curr_find_node -> data == NUMBER_SEARCH)
                 {
                     KillTimer(hwnd, SEARCHING_TIMER);
@@ -296,6 +305,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     InvalidateRect(hwnd, NULL, TRUE);
                 }
                 break;
+
+                 
         }
         break;
 
@@ -402,17 +413,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
             if(NotToSearchFlag == 0)
             {
-                //SetTimer(hwnd, SEARCHING_TIMER, 500, NULL);
-                p_curr_find_node = search_node(p_bst, NUMBER_SEARCH);
-                if(p_curr_find_node == NULL)
-                {
-                    MessageBox(hwnd, TEXT("Data Not Found!"), TEXT("BST"), MB_ICONINFORMATION);
-                    MessageBeep(MB_ICONERROR);
-                }
-                p_curr_find_node -> color = DATA_FOUND_COLOR;
+                p_curr_find_node = p_bst -> p_root;
+                isRootNodeFlag = 1;
+                SetTimer(hwnd, SEARCHING_TIMER, 1000, NULL);
                 InvalidateRect(hwnd, NULL, TRUE);
-
             }
+            p_curr_find_node -> color = NO_COLOR;
             break;
 
         case ID_DELETE_TREE:
@@ -644,7 +650,7 @@ void DrawNode(PAINTSTRUCT ps,HDC hdc, HWND hWnd, int x, int y, bst_node_t* p_nod
             SelectObject(ps.hdc, GetStockObject(DC_BRUSH));
             break;
         case DATA_HIGHLIGHT_COLOR:
-            SetDCBrushColor(hdc, RGB(255, 0, 0));
+            SetDCBrushColor(hdc, RGB(245, 195, 65));
             SelectObject(ps.hdc, GetStockObject(DC_BRUSH));
             break;
         case DATA_FOUND_COLOR:
