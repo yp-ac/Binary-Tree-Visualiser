@@ -27,32 +27,30 @@ typedef int INT;
         ExitProcess(EXIT_FAILURE);          \
     }
 
-#define SEARCHING_TIMER     1501
+#define SEARCHING_TIMER      1501
 
-// #define LEFT_NODE_EMPTY     -1
-// #define RIGHT_NODE_EMPTY    -2
+#define MAX_HEIGHT           5
+#define RADIUS               30
+#define ROW_HEIGHT           100
 
-#define MAX_HEIGHT          5
-#define RADIUS              30
-#define ROW_HEIGHT          100
+#define TRUE                 1
+#define FALSE                0
 
-#define TRUE                1
-#define FALSE               0
-
-#define SUCCESS             1 
-#define FAILURE             0
+#define SUCCESS              1 
+#define FAILURE              0
 
 // STACK ERRORS
-#define STACK_EMPTY         2
-#define STACK_OVERFLOW      3
-#define STACK_UNDERFLOW     4
+#define STACK_EMPTY          2
+#define STACK_OVERFLOW       3
+#define STACK_UNDERFLOW      4
 
 // BINARY SEARCH TREE ERRORS
-#define TREE_EMPTY          2
-#define TREE_DATA_NOT_FOUND 3
-#define TREE_NO_SUCCESSOR   4
-#define TREE_NO_PREDECESSOR 5
+#define TREE_EMPTY           2
+#define TREE_DATA_NOT_FOUND  3
+#define TREE_NO_SUCCESSOR    4
+#define TREE_NO_PREDECESSOR  5
 
+// Node Colors
 #define NO_COLOR             0
 #define DATA_FOUND_COLOR     1
 #define DATA_HIGHLIGHT_COLOR 2
@@ -65,7 +63,7 @@ struct stack
 struct bst_node
 {
     int data;
-    short color;
+    short color; 
     struct bst_node *left;
     struct bst_node *right;
     struct bst_node *parent;
@@ -88,8 +86,8 @@ stack_t *CreateStack(size_t max);
 int StackIsFull(stack_t *p_stack);
 int StackIsEmpty(stack_t *p_stack);
 
-int stack_push(stack_t *p_stack, int new_data);
-int stack_pop(stack_t *p_stack, int *old_data);
+int StackPush(stack_t *p_stack, int new_data);
+int StackPop(stack_t *p_stack, int *old_data);
 
 int StackPeek(stack_t *p_stack, int *data);
 void StackDestroy(stack_t **pp_stack);
@@ -105,20 +103,20 @@ int bst_max(struct bst *p_bst, int *p_max_data);
 int bst_min(struct bst *p_bst, int *p_min_data);
 int bst_inorder_successor(struct bst *p_bst, int ext_data, int *p_succ_data);
 int bst_inorder_predecessor(struct bst *p_bst, int ext_data, int *p_pred_data);
-int bst_search(struct bst *p_bst, int search_data);
-int remove_data(struct bst *p_nst, int r_data);
-void bst_destroy(struct bst **pp_bst);
+int BSTSearch(struct bst *p_bst, int search_data);
+int RemoveData(struct bst *p_nst, int r_data);
+void BSTDestroy(struct bst **pp_bst);
 
 struct bst_node *get_max_node(struct bst_node *p_node);
 struct bst_node *get_min_node(struct bst_node *p_node);
 struct bst_node *inorder_successor(struct bst_node *p_node);
 struct bst_node *inorder_predecessor(struct bst_node *p_node);
-struct bst_node *search_node(struct bst *p_bst, int search_data);
+struct bst_node *SearchNode(struct bst *p_bst, int search_data);
 void preorder_node(struct bst_node *p_root);
 void inorder_node(struct bst_node *p_root);
 void postorder_node(struct bst_node *p_root);
-void destroy_node(struct bst_node *p_root);
-struct bst_node *get_bst_node(int new_element);
+void DestroyNode(struct bst_node *p_root);
+struct bst_node *GetBSTNode(int new_element);
 
 // Win32
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -381,7 +379,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
             if (NotToDelFlag != 1)
             {
-                STATUS = remove_data(p_bst, NUMBER_DEL);
+                STATUS = RemoveData(p_bst, NUMBER_DEL);
                 
                 switch (STATUS) 
                 {
@@ -422,7 +420,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             break;
 
         case ID_DELETE_TREE:
-            bst_destroy(&p_bst);
+            BSTDestroy(&p_bst);
             p_bst = CreateBST();
             isStartWindow = 1;
             ColorChangeR = 255;
@@ -466,7 +464,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_DESTROY:
         StackDestroy(&prev_positions);
-        bst_destroy(&p_bst);
+        BSTDestroy(&p_bst);
         PostQuitMessage(0);
         break;
     }
@@ -707,12 +705,12 @@ void DisplayBSTNode(PAINTSTRUCT ps, HDC hdc, HWND hWnd, bst_node_t *p_node, int 
 
     DrawNode(ps, hdc, hWnd, x, y, p_node);
 
-    stack_push(prev_positions, x);
+    StackPush(prev_positions, x);
 
     DisplayBSTNode(ps, hdc, hWnd, p_node->left, level + 1, TRUE);
     DisplayBSTNode(ps, hdc, hWnd, p_node->right, level + 1, FALSE);
 
-    stack_pop(prev_positions, &prev_x);
+    StackPop(prev_positions, &prev_x);
 
     DeleteObject(hPen2);
     DeleteObject(holdPen2);
@@ -741,12 +739,12 @@ void DisplayBST(PAINTSTRUCT ps, HDC hdc, HWND hWnd, bst_t *p_bst)
 
     DrawNode(ps, hdc, hWnd, x, y, p_bst->p_root);
 
-    assert(stack_push(prev_positions, x) == SUCCESS);
+    assert(StackPush(prev_positions, x) == SUCCESS);
 
     DisplayBSTNode(ps, hdc, hWnd, p_bst->p_root->left, 2, TRUE);
     DisplayBSTNode(ps, hdc, hWnd, p_bst->p_root->right, 2, FALSE);
 
-    stack_pop(prev_positions, &tmp);
+    StackPop(prev_positions, &tmp);
 }
 
 // ******************** STACK ********************
@@ -777,7 +775,7 @@ int StackIsEmpty(stack_t *p_stack)
     return (p_stack->top <= -1);
 }
 
-int stack_push(stack_t *p_stack, int new_data)
+int StackPush(stack_t *p_stack, int new_data)
 {
     if (StackIsFull(p_stack))
     {
@@ -790,7 +788,7 @@ int stack_push(stack_t *p_stack, int new_data)
     return SUCCESS;
 }
 
-int stack_pop(stack_t *p_stack, int *old_data)
+int StackPop(stack_t *p_stack, int *old_data)
 {
     if (StackIsEmpty(p_stack))
     {
@@ -848,7 +846,7 @@ int bst_insert(struct bst *p_bst, int new_element)
     struct bst_node *p_new_node = NULL;
     struct bst_node *p_run = NULL;
 
-    p_new_node = get_bst_node(new_element);
+    p_new_node = GetBSTNode(new_element);
     p_run = p_bst->p_root;
 
     if (p_run == NULL)
@@ -945,7 +943,7 @@ int bst_inorder_successor(struct bst *p_bst, int ext_data, int *p_succ_data)
     struct bst_node *p_ext_node = NULL;
     struct bst_node *p_succ_node = NULL;
 
-    p_ext_node = search_node(p_bst, ext_data);
+    p_ext_node = SearchNode(p_bst, ext_data);
     if (p_ext_node == NULL)
         return (TREE_DATA_NOT_FOUND);
 
@@ -962,7 +960,7 @@ int bst_inorder_predecessor(struct bst *p_bst, int ext_data, int *p_pred_data)
     struct bst_node *p_ext_node = NULL;
     struct bst_node *p_pred_node = NULL;
 
-    p_ext_node = search_node(p_bst, ext_data);
+    p_ext_node = SearchNode(p_bst, ext_data);
     if (p_ext_node == NULL)
         return (TREE_DATA_NOT_FOUND);
 
@@ -974,17 +972,17 @@ int bst_inorder_predecessor(struct bst *p_bst, int ext_data, int *p_pred_data)
     return (SUCCESS);
 }
 
-int bst_search(struct bst *p_bst, int search_data)
+int BSTSearch(struct bst *p_bst, int search_data)
 {
-    return (search_node(p_bst, search_data) != NULL);
+    return (SearchNode(p_bst, search_data) != NULL);
 }
 
-int remove_data(struct bst *p_bst, int r_data)
+int RemoveData(struct bst *p_bst, int r_data)
 {
     struct bst_node *z = NULL; /* pointer to node to be deleted */
     struct bst_node *w = NULL; /* pointer to node to be deleted */
 
-    z = search_node(p_bst, r_data);
+    z = SearchNode(p_bst, r_data);
     if (z == NULL)
         return (TREE_DATA_NOT_FOUND);
 
@@ -1044,15 +1042,14 @@ int remove_data(struct bst *p_bst, int r_data)
     return (SUCCESS);
 }
 
-void bst_destroy(struct bst **pp_bst)
+void BSTDestroy(struct bst **pp_bst)
 {
-    destroy_node((*pp_bst)->p_root);
+    DestroyNode((*pp_bst)->p_root);
     free(*pp_bst);
     *pp_bst = NULL;
 }
 
-/////////////////////////////////////////////////////////////////
-
+// TODO: Implement Traversal using Win32
 void preorder_node(struct bst_node *p_root)
 {
     if (p_root != NULL)
@@ -1084,12 +1081,12 @@ void postorder_node(struct bst_node *p_root)
     }
 }
 
-void destroy_node(struct bst_node *p_root)
+void DestroyNode(struct bst_node *p_root)
 {
     if (p_root != NULL)
     {
-        destroy_node(p_root->left);
-        destroy_node(p_root->right);
+        DestroyNode(p_root->left);
+        DestroyNode(p_root->right);
         free(p_root);
     }
 }
@@ -1170,7 +1167,7 @@ struct bst_node *inorder_predecessor(struct bst_node *p_node)
     }
 }
 
-struct bst_node *search_node(struct bst *p_bst, int search_data)
+struct bst_node *SearchNode(struct bst *p_bst, int search_data)
 {
     struct bst_node *p_run = NULL;
 
@@ -1187,26 +1184,9 @@ struct bst_node *search_node(struct bst *p_bst, int search_data)
     }
 
     return (p_run);
-
-    // Old Search
-    // struct bst_node *p_run = NULL;
-
-    // p_run = p_bst->p_root;
-
-    // while (p_run != NULL)
-    // {
-    //     if (search_data == p_run->data)
-    //         break;
-    //     else if (search_data < p_run->data)
-    //         p_run = p_run->left;
-    //     else
-    //         p_run = p_run->right;
-    // }
-
-    // return (p_run);
 }
 
-struct bst_node *get_bst_node(int new_element)
+struct bst_node *GetBSTNode(int new_element)
 {
     struct bst_node *p_new_node = NULL;
 
